@@ -93,6 +93,26 @@ Um nome mais uma combinação de: agendas e grupos visíveis, disposição (mist
 
 Toda cor vem de tokens como fundo, superfície, texto e borda, com um valor por tema. As cores de agenda e de etiqueta são guardadas como um tom base, com variantes clara e escura derivadas e checadas quanto ao contraste. Estados como atrasado, hoje e concluído também são tokens.
 
-## Armazenamento
+## Campos de sincronização
 
-Local-first. Os dados ficam no navegador (IndexedDB), com exportação e importação em JSON. Sincronização opcional sem servidor do projeto (por exemplo WebDAV) é um passo futuro possível e não faz parte das primeiras entregas.
+Toda entidade (agenda, grupo de agendas, item, etiqueta, status, visão salva) carrega os mesmos quatro campos, desde a entrega 1, para que a sincronização possa ser acrescentada depois sem migrar dados:
+
+| Campo | Observações |
+| --- | --- |
+| `id` | Um UUID gerado no dispositivo, nunca por um servidor. |
+| `createdAt` | Quando foi criada. |
+| `updatedAt` | Quando mudou pela última vez. Usado para decidir qual versão vence. |
+| `deletedAt` | Vazio enquanto a entidade existe. Excluir preenche esse campo em vez de remover o registro, para que o outro dispositivo saiba da exclusão. Essa marca se chama tombstone (lápide). |
+
+## Armazenamento, contas e sincronização
+
+Local-first. Os dados sempre ficam no dispositivo (IndexedDB), com exportação e importação em JSON.
+
+**Dois modos:**
+
+- **Visitante:** tudo fica no navegador. O app nunca fala com servidor. Os dados do visitante podem ser exportados e, depois, importados para uma conta.
+- **Conta:** os mesmos dados locais, mais uma cópia na nuvem (Supabase) que sincroniza entre web e celular. O cadastro é fechado, então as contas são criadas pelo dono.
+
+**Conflitos:** quando o mesmo item mudou em dois dispositivos, vence a versão com o `updatedAt` mais recente (o último a escrever vence). Isso basta para uma pessoa com dois dispositivos. O único risco é perder uma edição quando os dois dispositivos mudam o mesmo item antes de sincronizar.
+
+**Segurança:** na nuvem, cada linha pertence a um usuário, e a segurança por linha (uma regra do banco que diz "esta linha só é visível ao seu dono") é obrigatória. Um teste deve provar que uma conta não consegue ler as linhas de outra.

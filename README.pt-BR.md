@@ -1,10 +1,10 @@
-# Agenda
+# Unified Agenda
 
 > Um item, várias lentes, tudo local.
 
 [English](README.md) | **Português (Brasil)**
 
-Uma agenda web local-first em que eventos e tarefas são a mesma coisa. Você enxerga esse único item por várias lentes: uma Linha do Tempo com rolagem dia após dia, um calendário e um quadro Kanban. Funciona no computador e no celular.
+Uma agenda web local-first em que eventos e tarefas são a mesma coisa. Você enxerga esse único item por várias lentes: uma Linha do Tempo com rolagem dia após dia, um calendário e um quadro Kanban. Funciona no computador e no celular, e contas aprovadas podem sincronizar entre dispositivos.
 
 **Status:** em planejamento. Ainda não há código da aplicação. Veja o [roteiro](docs/pt-BR/roadmap.md).
 
@@ -17,7 +17,7 @@ Existem ótimas ferramentas para cada pedaço desta ideia, mas cada pedaço mora
 - Alguns têm etiquetas e subtarefas aninhadas, mas limitam a profundidade ou deixam as melhores visões no plano pago.
 - Alguns guardam seus dados no seu dispositivo, mas têm poucas visões e pouca organização.
 
-O objetivo aqui é uma receita só: **um modelo de item, várias lentes por cima, e seus dados ficam no seu navegador**. O diferencial é a combinação, e não uma visão isolada.
+O objetivo aqui é uma receita só: **um modelo de item, várias lentes por cima, e seus dados sob o seu controle**. O diferencial é a combinação, e não uma visão isolada.
 
 ## Destaques
 
@@ -30,7 +30,7 @@ O objetivo aqui é uma receita só: **um modelo de item, várias lentes por cima
 - **Itens completos.** Anotações (Markdown), local, links e lista de marcação.
 - **Temas claro, escuro e automático.**
 - **Bom no celular.** Pensado para telas pequenas e toque desde a primeira entrega.
-- **Local-first.** Os dados ficam no navegador, com exportação e importação em JSON. Sem conta.
+- **Local-first, com sincronização opcional.** Os dados ficam no seu dispositivo (IndexedDB), com exportação e importação em JSON. O modo visitante não exige conta e nunca fala com servidor. Contas aprovadas também sincronizam entre web e celular.
 
 ## Princípios
 
@@ -38,7 +38,25 @@ O objetivo aqui é uma receita só: **um modelo de item, várias lentes por cima
 - **Tokens, e não cores soltas.** Toda cor vem de um token de tema, então os dois temas funcionam em qualquer lugar.
 - **Telas pequenas primeiro.** Os layouts partem do celular e crescem, e toda ação de arrastar tem uma alternativa por toque.
 - **Texto de interface simples.** Os textos da interface evitam travessões desnecessários. A pontuação deve ser simples e natural.
-- **Nada externo obrigatório.** O projeto deve funcionar sem depender de servidor ou conta.
+- **Funciona sem servidor.** O modo visitante roda inteiro no navegador. A nuvem é opcional e só serve para sincronizar.
+- **Grátis para manter.** O projeto é desenhado para ficar dentro dos planos gratuitos e evita recursos que consomem créditos, como funções serverless.
+
+## Stack (planejada)
+
+Versões e bibliotecas são confirmadas na entrega 1.
+
+| Área | Escolha |
+| --- | --- |
+| Linguagem | TypeScript |
+| Build | Vite |
+| Interface | React (o `core`, `filters`, `storage` e `sync` ficam sem framework) |
+| Dados locais | IndexedDB com Dexie |
+| Arrastar e soltar | dnd-kit |
+| Listas longas | TanStack Virtual |
+| Testes | Vitest e Testing Library |
+| Qualidade | Prettier, ESLint e o compilador do TypeScript |
+| Nuvem, opcional | Supabase (Postgres e Auth) |
+| Hospedagem | Netlify, como site estático |
 
 ## Estrutura do repositório
 
@@ -53,7 +71,8 @@ O objetivo aqui é uma receita só: **um modelo de item, várias lentes por cima
 │   └── pt-BR/                os mesmos arquivos, traduzidos
 ├── src/
 │   ├── core/                 itens, agendas, etiquetas, status e regras
-│   ├── storage/              IndexedDB, importação e exportação JSON
+│   ├── storage/              adaptadores local (IndexedDB) e nuvem, importação e exportação JSON
+│   ├── sync/                 regras de mesclagem entre dispositivo e nuvem
 │   ├── filters/              agenda, etiqueta, período do dia, texto
 │   ├── views/
 │   │   ├── timeline/

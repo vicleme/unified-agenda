@@ -1,10 +1,10 @@
-# Agenda
+# Unified Agenda
 
 > One item, many lenses, all local.
 
 **English** | [Português (Brasil)](README.pt-BR.md)
 
-A local-first web agenda where events and tasks are the same kind of thing. You see that one item through several lenses: a scrollable day-by-day timeline, a calendar and a Kanban board. It works on desktop and on your phone.
+A local-first web agenda where events and tasks are the same kind of thing. You see that one item through several lenses: a scrollable day-by-day timeline, a calendar and a Kanban board. It works on desktop and on your phone, and approved accounts can sync between devices.
 
 **Status:** planning. No application code yet. See the [roadmap](docs/en/roadmap.md).
 
@@ -17,7 +17,7 @@ Good tools exist for each piece of this idea, but they live in different product
 - Some support nested tags and sub-tasks, but cap the depth or lock the best views behind a paid plan.
 - Some keep your data on your device, but offer few views and few ways to organize.
 
-The goal here is a single recipe: **one item model, several lenses on top, and your data stays in your browser**. The differentiator is the combination, not any single view.
+The goal here is a single recipe: **one item model, several lenses on top, and your data stays under your control**. The differentiator is the combination, not any single view.
 
 ## Highlights
 
@@ -30,7 +30,7 @@ The goal here is a single recipe: **one item model, several lenses on top, and y
 - **Rich items.** Notes (Markdown), location, links and a checklist.
 - **Light, dark and automatic themes.**
 - **Mobile friendly.** Designed for small screens and touch from the first delivery.
-- **Local-first.** Data stays in your browser, with JSON export and import. No account needed.
+- **Local-first, with optional sync.** Data lives on your device (IndexedDB), with JSON export and import. Guest mode needs no account and never contacts a server. Approved accounts also sync across web and phone.
 
 ## Principles
 
@@ -38,7 +38,25 @@ The goal here is a single recipe: **one item model, several lenses on top, and y
 - **Tokens, not loose colors.** Every color comes from a theme token, so both themes work everywhere.
 - **Small screens first.** Layouts start from the phone and grow, and every drag action has a tap alternative.
 - **Plain interface text.** Interface strings avoid unnecessary dashes. Punctuation should be simple and natural.
-- **Nothing external required.** The project should run without depending on a server or an account.
+- **Works without a server.** Guest mode runs entirely in the browser. The cloud is optional and only used for sync.
+- **Free to run.** The project is designed to stay within free tiers and avoids features that consume credits, such as serverless functions.
+
+## Tech stack (planned)
+
+Versions and libraries are confirmed at delivery 1.
+
+| Area | Choice |
+| --- | --- |
+| Language | TypeScript |
+| Build | Vite |
+| Interface | React (the `core`, `filters`, `storage` and `sync` stay framework-free) |
+| Local data | IndexedDB through Dexie |
+| Drag and drop | dnd-kit |
+| Long lists | TanStack Virtual |
+| Tests | Vitest and Testing Library |
+| Quality | Prettier, ESLint and the TypeScript compiler |
+| Cloud, optional | Supabase (Postgres and Auth) |
+| Hosting | Netlify, as a static site |
 
 ## Repository layout
 
@@ -53,7 +71,8 @@ The goal here is a single recipe: **one item model, several lenses on top, and y
 │   └── pt-BR/                same files, translated
 ├── src/
 │   ├── core/                 items, agendas, tags, statuses and rules
-│   ├── storage/              IndexedDB, JSON import and export
+│   ├── storage/              local (IndexedDB) and cloud adapters, JSON import and export
+│   ├── sync/                 merge rules between device and cloud
 │   ├── filters/              agenda, tag, day period, text
 │   ├── views/
 │   │   ├── timeline/

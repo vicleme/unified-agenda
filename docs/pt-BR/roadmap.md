@@ -2,21 +2,22 @@
 
 [English](../en/roadmap.md) | [Voltar ao README](../../README.pt-BR.md)
 
-Cada entrega termina em algo utilizável. Toda entrega precisa funcionar no celular tanto quanto no computador.
+Cada entrega termina em algo utilizável. Toda entrega precisa funcionar no celular tanto quanto no computador. Tudo até a entrega 6 roda inteiro no dispositivo, então você pode usar o app de verdade antes de as contas chegarem.
 
 ## Entregas
 
 | # | Entrega | O que você já consegue usar |
 | --- | --- | --- |
 | 0 | Repositório: estrutura, READMEs em en e pt-BR, LICENSE, convenções | Uma base pronta com o primeiro commit |
-| 1 | Core: agendas, itens recursivos (início e fim, anotações, local, links), armazenamento local, tokens de tema e temas claro, escuro e automático, estrutura responsiva | Criar e editar tudo, ainda sem visões elaboradas |
+| 1 | Core: agendas, itens recursivos (início e fim, anotações, local, links), armazenamento local (IndexedDB), exportar e importar JSON, tokens de tema com temas claro, escuro e automático, estrutura responsiva, testes e scripts de qualidade (Vitest, Prettier, ESLint). O modelo já nasce preparado para sincronizar (UUIDs, `updatedAt`, `deletedAt`) | Criar e editar tudo, ainda sem visões elaboradas |
 | 2 | **Linha do Tempo**: rolagem contínua nos dois sentidos, um bloco por dia, marcas de "continua" para itens de vários dias, dias vazios recolhíveis, faixa de atrasados, botão Hoje | Rolar seus dias, com eventos e entregas juntos |
 | 3 | Etiquetas em árvore com escopo, e filtros (agenda, etiqueta, tipo, período do dia, texto) | Organizar e filtrar |
 | 4 | Seleção de agendas, grupos, disposição (misturadas, separadas, agrupadas) e visões salvas | A flexibilidade de escolher o que você vê |
 | 5 | Calendário (dia, semana, mês) | A visão clássica, já com os filtros |
 | 6 | Kanban com grupos e colunas personalizáveis, arrastar e soltar com suporte a toque | Mover cartões entre colunas |
-| 7 | Integração (caixa de entrada, arrastar para agendar), recorrência, lembretes | Refinamentos |
-| 8 | Exportar e importar JSON e .ics, PWA instalável, uso offline | Portabilidade e instalação no celular |
+| 7 | **Contas e sincronização**: login com Supabase e cadastro fechado, modo visitante totalmente local, importação dos dados locais para a conta, sincronização com o último a escrever vence, testes de segurança por linha | A mesma agenda na web e no celular |
+| 8 | Integração (caixa de entrada, arrastar para agendar), recorrência, lembretes | Refinamentos |
+| 9 | Exportar e importar .ics, PWA instalável, uso offline | Portabilidade e instalação no celular |
 
 ## Notas sobre celular e toque
 
@@ -24,24 +25,40 @@ Cada entrega termina em algo utilizável. Toda entrega precisa funcionar no celu
 - A Linha do Tempo é a visão natural do celular, por ser uma coluna única que rola.
 - No celular o Kanban mostra uma coluna por vez, com deslize entre as colunas.
 - Toda ação de arrastar e soltar tem uma alternativa por toque, como um menu "Mover para".
-- O PWA instalável chega na entrega 8, mas o layout responsivo é exigido desde a entrega 1.
+- O PWA instalável chega na entrega 9, mas o layout responsivo é exigido desde a entrega 1.
+
+## Regras de hospedagem e plano gratuito
+
+O projeto não pode gerar gasto. Regras que decorrem dos planos gratuitos, conforme a documentação de novembro de 2026:
+
+- **Netlify (site estático):** o plano gratuito dá 300 créditos por mês, divididos entre todos os sites da conta. Um deploy de produção custa 15 créditos, o tráfego custa 20 créditos por GB, e Deploy Previews e deploys de branch não custam nada. Quando os créditos acabam, os sites são pausados.
+- Trabalhe em branches e faça merge na `main` (que publica em produção) só quando uma entrega estiver pronta. Cerca de 10 deploys de produção por mês é um orçamento seguro.
+- Não use Netlify Functions, bancos de dados do Netlify nem recursos de IA, porque consomem créditos. Não registre domínios pelo Netlify. O endereço `netlify.app` basta.
+- **Supabase (sincronização na nuvem):** o plano gratuito dá 500 MB de banco por projeto, 50 mil usuários ativos por mês e 5 GB de tráfego por mês. Um projeto gratuito é pausado após 7 dias de pouca atividade e pode ser retomado pelo painel. Como o app é local-first, ele continua funcionando no dispositivo enquanto o projeto está pausado.
+- O modo visitante nunca fala com o Supabase, então visitantes não consomem a cota. O cadastro fica fechado, então só contas aprovadas gravam dados.
+
+Confira os termos atuais ao criar cada projeto, porque os planos gratuitos mudam.
 
 ## Decisões tomadas
 
-- **Local-first:** dados no navegador, com exportação e importação em JSON.
+- **Local-first:** dados no dispositivo, com exportação e importação em JSON.
 - **Períodos do dia:** a madrugada (00h a 06h) é o quarto período, junto com manhã, tarde e noite.
 - **Posicionamento:** um item, várias lentes, tudo local.
 - **Itens que atravessam períodos:** aparecem em todos os períodos que tocam.
 - **Tarefas sem data:** permitidas.
 - **Texto de interface:** evitar travessões desnecessários.
+- **Stack:** TypeScript, Vite e React, com `core`, `filters`, `storage` e `sync` sem framework.
+- **Hospedagem:** Netlify, como site estático.
+- **Nuvem:** Supabase, com modo visitante que fica local e contas criadas pelo dono.
+- **Nome do repositório:** `unified-agenda`.
 
 ## Decisões em aberto
 
-- Stack de tecnologia. Esta decisão desbloqueia a entrega 1. A inclinação é por ferramentas leves, em linha com o princípio de não depender de nada externo.
 - Status opcional para eventos (a inclinação atual é que sim).
 - Modos de exibição dos subitens por visão (aninhados, achatados, só os pais).
+- Se o cadastro continua restrito ao dono ou vira um formulário de pedido de acesso.
+- Se o Supabase pede cartão ou permite cobrança por estouro no plano gratuito, a conferir ao criar o projeto.
 
 ## Ideias para depois
 
 - Alternância automática de conjuntos de agendas por horário.
-- Sincronização opcional sem servidor do projeto, por exemplo WebDAV.

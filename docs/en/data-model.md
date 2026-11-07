@@ -93,6 +93,26 @@ A name plus a combination of: visible agendas and groups, layout (mixed, separat
 
 All colors come from tokens such as background, surface, text and border, with a value per theme. Agenda and tag colors are stored as a base tone, with light and dark variants derived and checked for contrast. States such as overdue, today and done are tokens too.
 
-## Storage
+## Sync fields
 
-Local-first. Data lives in the browser (IndexedDB), with JSON export and import. Optional sync without a project server (for example WebDAV) is a possible future step and is not part of the first deliveries.
+Every entity (agenda, agenda group, item, tag, status, saved view) carries the same four fields, from delivery 1, so that sync can be added later without migrating data:
+
+| Field | Notes |
+| --- | --- |
+| `id` | A UUID generated on the device, never by a server. |
+| `createdAt` | When it was created. |
+| `updatedAt` | When it last changed. Used to decide which version wins. |
+| `deletedAt` | Empty while the entity exists. Deleting sets it instead of removing the record, so the other device learns about the deletion. This marker is called a tombstone. |
+
+## Storage, accounts and sync
+
+Local-first. Data always lives on the device (IndexedDB), with JSON export and import.
+
+**Two modes:**
+
+- **Guest:** everything stays in the browser. The app never contacts a server. Guest data can be exported, and imported into an account later.
+- **Account:** the same local data, plus a copy in the cloud (Supabase) that syncs across web and phone. Sign-ups are closed, so accounts are created by the owner.
+
+**Conflicts:** when the same item changed on two devices, the version with the newest `updatedAt` wins (last write wins). This is enough for one person with two devices. The only risk is losing an edit when both devices change the same item before syncing.
+
+**Security:** in the cloud, every row belongs to one user, and row level security (a database rule that says "this row is visible only to its owner") is mandatory. A test must prove that one account cannot read another account's rows.
