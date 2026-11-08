@@ -6,7 +6,7 @@
 
 Uma agenda web local-first em que eventos e tarefas são a mesma coisa. Você enxerga esse único item por várias lentes: uma Linha do Tempo com rolagem dia após dia, um calendário e um quadro Kanban. Funciona no computador e no celular, e contas aprovadas podem sincronizar entre dispositivos.
 
-**Status:** em planejamento. Ainda não há código da aplicação. Veja o [roteiro](docs/pt-BR/roadmap.md).
+**Status:** as entregas 1 (core com armazenamento local), 2 (Linha do Tempo), 3 (etiquetas e filtros) e 4 (seleção de agendas, grupos, disposição e visões salvas) estão concluídas. Já dá para criar e editar agendas, eventos, tarefas e subitens, escolher o fuso de exibição e os períodos do dia, e guardar tudo num backup JSON. A Linha do Tempo rola dia após dia, mostra as tarefas em aberto e as atrasadas em cada dia e deixa marcar uma tarefa como feita direto na linha dela. As etiquetas formam uma árvore com escopo, e a Linha do Tempo tem um painel de filtros (texto, tipo, período do dia, etiquetas e "vence em até N dias"). O mesmo painel escolhe quais agendas mostrar (por agenda ou por grupo), organiza cada dia misturado, por agenda ou por grupo, e guarda suas combinações favoritas como visões salvas com nome, lembradas enquanto você troca de aba. O calendário e o Kanban ainda são telas vazias e vêm a seguir. Veja o [roteiro](docs/pt-BR/roadmap.md).
 
 ## Por que isto existe
 
@@ -21,12 +21,12 @@ O objetivo aqui é uma receita só: **um modelo de item, várias lentes por cima
 
 ## Destaques
 
-- **Evento e tarefa são a mesma coisa.** Os dois têm início e fim (data e hora). Uma tarefa também pode existir sem data.
+- **Evento e tarefa são a mesma coisa.** Um evento tem início e fim (data e hora). Uma tarefa tem uma janela, do dia em que foi passada até a entrega, então ela fica visível em todos os dias em que você está vivendo com ela. Uma tarefa também pode existir sem data, e você pode reservar blocos de trabalho para ela.
 - **Aninhamento sem limite.** Todo subitem é um item completo (datas, etiquetas, status), em qualquer profundidade. A lista de marcação é só o caso leve.
 - **Etiquetas em árvore, com escopo.** As etiquetas formam uma árvore (por exemplo Cuidado, depois Jardinagem, depois Regas). Cada etiqueta é global ou restrita a uma ou mais agendas. Filtrar por um pai inclui os descendentes.
 - **Períodos do dia.** Filtre por madrugada, manhã, tarde e noite. Os períodos são calculados a partir dos horários, e não armazenados.
 - **Seleção e agrupamento de agendas.** Mostre todas, nenhuma ou um conjunto escolhido, em grupos, misturadas ou lado a lado. Salve combinações como visões com nome.
-- **Três lentes.** Linha do Tempo (rolagem contínua, dia após dia), calendário (dia, semana, mês) e Kanban (grupos e colunas personalizáveis, arrastar e soltar).
+- **Três lentes.** Linha do Tempo (rolagem contínua, dia após dia, com botão para marcar tarefas como feitas e desfazer), calendário (dia, semana, mês) e Kanban (grupos e colunas personalizáveis, arrastar e soltar).
 - **Itens completos.** Anotações (Markdown), local, links e lista de marcação.
 - **Temas claro, escuro e automático.**
 - **Bom no celular.** Pensado para telas pequenas e toque desde a primeira entrega.
@@ -38,12 +38,13 @@ O objetivo aqui é uma receita só: **um modelo de item, várias lentes por cima
 - **Tokens, e não cores soltas.** Toda cor vem de um token de tema, então os dois temas funcionam em qualquer lugar.
 - **Telas pequenas primeiro.** Os layouts partem do celular e crescem, e toda ação de arrastar tem uma alternativa por toque.
 - **Texto de interface simples.** Os textos da interface evitam travessões desnecessários. A pontuação deve ser simples e natural.
+- **Dois idiomas de interface.** A interface existe em português (Brasil) e em inglês, escolhida automaticamente pelo navegador e que pode ser trocada a qualquer momento.
 - **Funciona sem servidor.** O modo visitante roda inteiro no navegador. A nuvem é opcional e só serve para sincronizar.
 - **Grátis para manter.** O projeto é desenhado para ficar dentro dos planos gratuitos e evita recursos que consomem créditos, como funções serverless.
 
 ## Stack (planejada)
 
-Versões e bibliotecas são confirmadas na entrega 1.
+As versões das ferramentas foram confirmadas na entrega 1a: React 19, Vite 8, TypeScript 6.0, Vitest 5, ESLint 10 e Prettier 3. O TypeScript fica na 6.0 porque o typescript-eslint ainda não suporta a 6.1 ou mais nova. O Dexie está confirmado (4.4.7). O dnd-kit é confirmado quando for usado pela primeira vez. O TanStack Virtual ficou de fora da Linha do Tempo de propósito (veja o roteiro) e continua como opção se as listas longas pesarem.
 
 | Área | Escolha |
 | --- | --- |
@@ -52,7 +53,7 @@ Versões e bibliotecas são confirmadas na entrega 1.
 | Interface | React (o `core`, `filters`, `storage` e `sync` ficam sem framework) |
 | Dados locais | IndexedDB com Dexie |
 | Arrastar e soltar | dnd-kit |
-| Listas longas | TanStack Virtual |
+| Listas longas | Rolagem simples, com dias vazios dobrados (TanStack Virtual só se precisar) |
 | Testes | Vitest e Testing Library |
 | Qualidade | Prettier, ESLint e o compilador do TypeScript |
 | Nuvem, opcional | Supabase (Postgres e Auth) |
@@ -66,6 +67,8 @@ Versões e bibliotecas são confirmadas na entrega 1.
 ├── README.pt-BR.md           português, linkado nos dois sentidos
 ├── LICENSE
 ├── CHANGELOG.md
+├── package.json              scripts e dependências
+├── index.html, vite.config.ts, netlify.toml
 ├── docs/
 │   ├── en/                   data-model, roadmap, contributing
 │   └── pt-BR/                os mesmos arquivos, traduzidos
@@ -81,6 +84,17 @@ Versões e bibliotecas são confirmadas na entrega 1.
 │   └── ui/                   componentes compartilhados e tokens de tema
 └── tests/
 ```
+
+## Como rodar
+
+Você precisa do Node.js 20.19 ou mais novo (ou 22.12 ou mais novo).
+
+```
+npm install
+npm run dev
+```
+
+`npm run check` roda a checagem de tipos, o linter, a conferência de formato e todos os testes. Os dados ficam no seu navegador (IndexedDB). Use o botão Gerenciar para criar agendas e itens, e a aba Backup para salvar ou restaurar tudo.
 
 ## Documentação
 

@@ -1,0 +1,8 @@
+# Markdown is left alone, to keep the bilingual docs free of reformatting noise
+*.md
+
+dist
+coverage
+node_modules
+package-lock.json
+LICENSE
